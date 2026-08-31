@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bug Hunt - Bestenliste</title>
+<link rel="stylesheet" href="/css/style.css">
+<style>
+  .lb-wrap { width: 100%; max-width: 900px; }
+  table { width: 100%; border-collapse: collapse; font-size: clamp(1rem, 2.4vw, 1.4rem); }
+  th, td { padding: 14px 18px; text-align: left; }
+  thead th { color: var(--text-muted); font-weight: 600; border-bottom: 2px solid var(--bg-line); }
+  tbody tr { border-bottom: 1px solid var(--bg-line); }
+  tbody tr:nth-child(1) .rank { color: var(--accent); font-weight: 800; }
+  .rank { width: 60px; }
+  .empty { text-align: center; color: var(--text-muted); padding: 40px; }
+</style>
+</head>
+<body>
+<div class="app lb-wrap">
+  <h1><span class="accent">Bug</span> Hunt - Bestenliste</h1>
+  <p class="subtitle">Top 10 des heutigen Tages</p>
+  <div class="panel">
+    <table>
+      <thead>
+        <tr><th class="rank">#</th><th>Name</th><th>Punkte</th><th>Schnellste Reaktion</th></tr>
+      </thead>
+      <tbody id="lb-body"></tbody>
+    </table>
+    <p class="empty" id="lb-empty" hidden>Noch keine Partien gespielt.</p>
+  </div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/leaderboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Bug Hunt</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <h1><span class="accent">Bug</span> Hunt</h1>
+  <p class="subtitle">Finde die abweichende Zeile - schneller als dein Gegner!</p>
+
+  <!-- Startbildschirm: Name eingeben, Spiel erstellen oder beitreten -->
+  <section id="screen-start" class="panel">
+    <div>
+      <label for="input-name">Dein Vorname</label>
+      <input type="text" id="input-name" maxlength="10" placeholder="z.B. Alex" autocomplete="off">
+    </div>
+
+    <button id="btn-create" class="primary">Spiel erstellen</button>
+
+    <div class="divider">oder</div>
+
+    <div>
+      <label for="input-code">Code eines Freundes eingeben</label>
+      <input type="text" id="input-code" class="code-input" maxlength="4" placeholder="XXXX" autocomplete="off">
+    </div>
+    <button id="btn-join" class="secondary">Beitreten</button>
+
+    <p id="start-error" class="error-text"></p>
+
+    <button id="btn-testmode" class="link">🧪 Testmodus: 2. Spieler in neuem Tab öffnen</button>
+  </section>
+
+  <!-- Warteraum: Code + QR-Code anzeigen -->
+  <section id="screen-waiting" class="panel" hidden>
+    <div class="code-display">
+      <div class="code" id="waiting-code">----</div>
+    </div>
+    <div class="qr-wrap">
+      <img id="waiting-qr" alt="QR-Code zum Beitreten" width="200" height="200">
+    </div>
+    <p class="status-banner pulse">Warte auf zweiten Spieler ...</p>
+    <button id="btn-cancel-waiting" class="link">Abbrechen</button>
+  </section>
+
+  <!-- Countdown vor Rundenstart -->
+  <section id="screen-countdown" class="panel" hidden>
+    <p class="status-banner" id="countdown-status">Beide Spieler da! Los geht's in</p>
+    <div class="countdown-number" id="countdown-number">3</div>
+  </section>
+
+  <!-- Spielbildschirm -->
+  <section id="screen-game" class="panel" hidden>
+    <div class="scoreboard">
+      <div class="score-box me">
+        <div class="name" id="game-my-name">Ich</div>
+        <div class="score" id="game-my-score">0</div>
+      </div>
+      <div class="score-box">
+        <div class="name" id="game-opp-name">Gegner</div>
+        <div class="score" id="game-opp-score">0</div>
+      </div>
+    </div>
+    <p class="round-label" id="game-round-label">Runde 1</p>
+    <p class="lock-banner" id="game-lock-banner"></p>
+    <p class="status-banner" id="game-status-banner"></p>
+    <div class="lines" id="game-lines"></div>
+  </section>
+
+  <!-- Spielende -->
+  <section id="screen-gameover" class="panel" hidden>
+    <p class="result-title" id="gameover-title">Gewonnen!</p>
+    <p class="round-label" id="gameover-score"></p>
+    <button id="btn-again" class="primary">Nochmal</button>
+    <a href="/leaderboard" class="link" style="text-align:center; text-decoration:underline; color:var(--text-muted);">Zur Bestenliste</a>
+  </section>
+
+  <!-- Fehler / Gegner weg -->
+  <section id="screen-notice" class="panel" hidden>
+    <p class="status-banner" id="notice-text"></p>
+  </section>
+
+  <footer class="hint">Bug Hunt · AKB Stifti-Stand</footer>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
