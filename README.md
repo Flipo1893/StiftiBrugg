@@ -94,6 +94,12 @@ Internet-Uplink (z.B. Hotspot vom eigenen Handy mit Datenvolumen, oder
 Messe-WLAN) – logisch, sonst könnten Besucher-Handys ihn ja auch nicht über
 ihre eigenen mobilen Daten erreichen.
 
+**Wichtig zur Reihenfolge:** Erst den Tunnel starten und die Adresse
+abwarten, danach den Server **einmalig** mit dieser Adresse starten. Wird der
+Server zuerst (ohne `PUBLIC_URL`) gestartet, nutzt er automatisch eure
+LAN-IP für Join-Link und QR-Code – Besucher auf eigenen mobilen Daten können
+diese private Adresse nicht erreichen und die Seite lädt bei ihnen endlos.
+
 1. `cloudflared` installieren:
    - **Windows:** Installer von
      [github.com/cloudflare/cloudflared/releases](https://github.com/cloudflare/cloudflared/releases/latest)
@@ -101,21 +107,25 @@ ihre eigenen mobilen Daten erreichen.
    - **macOS:** `brew install cloudflared`
    - **Linux:** `.deb`/`.rpm` von derselben Release-Seite installieren.
 2. Laptop mit Internet verbinden (Handy-Hotspot mit Datenvolumen oder
-   Messe-WLAN) und den Bug-Hunt-Server wie gewohnt starten: `npm start`.
-3. In einem zweiten Terminal-Fenster den Tunnel starten:
+   Messe-WLAN).
+3. **Zuerst** in einem Terminal-Fenster den Tunnel starten (der Bug-Hunt-
+   Server muss dafür noch gar nicht laufen):
    ```bash
    cloudflared tunnel --url http://localhost:3000
    ```
-4. `cloudflared` gibt eine Adresse aus wie
-   `https://random-woerter-1234.trycloudflare.com`. Server neu starten, aber
-   diesmal mit dieser Adresse als `PUBLIC_URL`:
+   `cloudflared` gibt eine Adresse aus wie
+   `https://random-woerter-1234.trycloudflare.com`.
+4. **Erst danach**, in einem zweiten Terminal-Fenster, den Server **einmal**
+   mit dieser Adresse als `PUBLIC_URL` starten:
    - **Windows (PowerShell):**
      `$env:PUBLIC_URL="https://random-woerter-1234.trycloudflare.com"; npm start`
    - **macOS/Linux:**
      `PUBLIC_URL=https://random-woerter-1234.trycloudflare.com npm start`
-5. Fertig – Join-Link und QR-Code auf der Startseite nutzen jetzt diese
-   öffentliche Adresse. Besucher können über ihre eigenen mobilen Daten
-   beitreten, ganz ohne euren Hotspot.
+5. In der Server-Konsole prüfen, dass "Oeffentlich: https://...trycloudflare.com"
+   angezeigt wird (nicht "Im LAN: http://192.168...") – dann nutzen Join-Link
+   und QR-Code auf der Startseite garantiert die richtige Adresse. Besucher
+   können jetzt über ihre eigenen mobilen Daten beitreten, ganz ohne euren
+   Hotspot.
 
 **Hinweis:** Diese kostenlose `trycloudflare.com`-Adresse ist zufällig
 generiert und ändert sich bei jedem Neustart von `cloudflared` – für einen
