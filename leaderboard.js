@@ -51,18 +51,21 @@ function addEntry(name, points, bestReactionMs) {
   return entries;
 }
 
-// Top 10: meiste Punkte zuerst, bei Gleichstand schnellste Reaktionszeit zuerst.
-function getTop(limit = 10) {
+// Alle Eintraege sortiert: meiste Punkte zuerst, bei Gleichstand schnellste
+// Reaktionszeit zuerst. Der Client zeigt daraus standardmaessig nur die
+// Top 10 an und kann den Rest bei Bedarf aufklappen.
+function getAll() {
   const entries = readEntries();
-  return entries
-    .slice()
-    .sort((a, b) => {
-      if (b.points !== a.points) return b.points - a.points;
-      const aTime = a.bestReactionMs === null ? Infinity : a.bestReactionMs;
-      const bTime = b.bestReactionMs === null ? Infinity : b.bestReactionMs;
-      return aTime - bTime;
-    })
-    .slice(0, limit);
+  return entries.slice().sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    const aTime = a.bestReactionMs === null ? Infinity : a.bestReactionMs;
+    const bTime = b.bestReactionMs === null ? Infinity : b.bestReactionMs;
+    return aTime - bTime;
+  });
+}
+
+function getTop(limit = 10) {
+  return getAll().slice(0, limit);
 }
 
 function reset() {
@@ -71,6 +74,7 @@ function reset() {
 
 module.exports = {
   addEntry,
+  getAll,
   getTop,
   reset,
 };

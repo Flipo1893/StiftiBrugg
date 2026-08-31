@@ -190,7 +190,7 @@ class Room {
     for (const p of this.players) {
       leaderboard.addEntry(p.name, p.score, p.bestReactionMs);
     }
-    io.emit('leaderboardUpdate', leaderboard.getTop(10));
+    io.emit('leaderboardUpdate', leaderboard.getAll());
     io.to(this.code).emit('gameOver', {
       winnerIndex: this.players.indexOf(gameWinner),
       winnerName: gameWinner.name,

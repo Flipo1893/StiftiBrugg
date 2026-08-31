@@ -270,12 +270,14 @@ io.on('connection', (socket) => {
       return;
     }
     leaderboard.reset();
-    io.emit('leaderboardUpdate', leaderboard.getTop(10));
+    io.emit('leaderboardUpdate', leaderboard.getAll());
     if (callback) callback({ ok: true });
   });
 
+  // Liefert alle Eintraege sortiert; der Client zeigt standardmaessig nur
+  // die Top 10 an und kann den Rest bei Bedarf aufklappen.
   socket.on('leaderboard:subscribe', (data, callback) => {
-    if (callback) callback(leaderboard.getTop(10));
+    if (callback) callback(leaderboard.getAll());
   });
 });
 

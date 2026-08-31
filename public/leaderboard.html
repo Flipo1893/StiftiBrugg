@@ -21,6 +21,8 @@
     th, td { padding: 14px 18px; }
   }
   .empty { text-align: center; color: var(--text-muted); padding: 40px; }
+  tbody#lb-body-extra tr .rank { color: inherit; font-weight: 400; }
+  .toggle-more { align-self: center; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -35,9 +37,11 @@
           <tr><th class="rank">#</th><th>Name</th><th class="col-punkte">Punkte</th><th class="col-reaktion">Reaktion</th></tr>
         </thead>
         <tbody id="lb-body"></tbody>
+        <tbody id="lb-body-extra" hidden></tbody>
       </table>
     </div>
     <p class="empty" id="lb-empty" hidden>Noch keine Partien gespielt.</p>
+    <button id="btn-toggle-more" class="link toggle-more" hidden>Weitere anzeigen</button>
   </div>
 
   <div class="panel" style="align-items: center;">
