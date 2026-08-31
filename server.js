@@ -61,6 +61,22 @@ function getBaseUrl() {
   return PUBLIC_URL || getLanUrl();
 }
 
+// QR-Code zur Startseite, z.B. fuer einen Zweitbildschirm mit der
+// Bestenliste: Besucher scannen ihn und landen direkt auf der Seite, auf
+// der sie ein neues Spiel erstellen oder einem Code beitreten koennen.
+// Zeigt bewusst auf "/" statt auf einen einzelnen Lobby-Code, da hier
+// jederzeit mehrere Paare gleichzeitig ein eigenes Spiel starten koennen.
+app.get('/qr-home.png', async (req, res) => {
+  try {
+    const buffer = await QRCode.toBuffer(`${getBaseUrl()}/`, { margin: 1, scale: 8 });
+    res.set('Content-Type', 'image/png');
+    res.send(buffer);
+  } catch (err) {
+    console.error('QR-Code fuer Startseite konnte nicht erzeugt werden:', err);
+    res.status(500).end();
+  }
+});
+
 // --- Socket.io: gesamte Spiellogik -----------------------------------------
 
 io.on('connection', (socket) => {
