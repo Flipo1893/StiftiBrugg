@@ -74,11 +74,58 @@ Sollen Besucher über ihre **eigenen mobilen Daten** teilnehmen können (statt
 statische Seiten und kurzlebige Serverless-Functions – kein dauerhaft
 laufender Node-Prozess, keine langlebigen WebSocket-Verbindungen (die
 Socket.io braucht) und kein beschreibbares Dateisystem für die
-Bestenliste. Stattdessen einen Anbieter mit "echtem" Node-Webservice nutzen,
-z.B. [Render](https://render.com), [Railway](https://railway.app) oder
-[Fly.io](https://fly.io).
+Bestenliste.
 
-### Deployment am Beispiel Render
+Es gibt zwei sinnvolle Wege, kostenlos:
+
+| Option | Kostenlos? | Vor-/Nachteil |
+|---|---|---|
+| **Cloudflare Tunnel** (empfohlen) | dauerhaft gratis | Server läuft weiterhin auf eurem Laptop, kein "Einschlafen", aber Laptop braucht selbst einen Internet-Uplink (z.B. Hotspot vom Handy) |
+| Render / Railway / Fly.io | Gratis-Stufe vorhanden | Läuft in der Cloud, aber Gratis-Stufen schlafen nach Inaktivität ein (30–60s Aufwachzeit) – killt die erste 60-Sekunden-Partie |
+
+### Empfohlen: Cloudflare Tunnel (kostenlos, kein Einschlafen)
+
+Dabei bleibt alles wie gehabt: Der Server läuft weiterhin lokal auf eurem
+Laptop mit `npm start`. `cloudflared` öffnet zusätzlich einen sicheren,
+öffentlichen HTTPS-Link zu diesem lokalen Prozess – ohne eigenes Deployment,
+ohne Cold-Start, Bestenliste bleibt auf eurer eigenen Festplatte. Einziger
+Unterschied zum reinen Offline-Betrieb: der Laptop selbst braucht einen
+Internet-Uplink (z.B. Hotspot vom eigenen Handy mit Datenvolumen, oder
+Messe-WLAN) – logisch, sonst könnten Besucher-Handys ihn ja auch nicht über
+ihre eigenen mobilen Daten erreichen.
+
+1. `cloudflared` installieren:
+   - **Windows:** Installer von
+     [github.com/cloudflare/cloudflared/releases](https://github.com/cloudflare/cloudflared/releases/latest)
+     herunterladen (`cloudflared-windows-amd64.msi`) und ausführen.
+   - **macOS:** `brew install cloudflared`
+   - **Linux:** `.deb`/`.rpm` von derselben Release-Seite installieren.
+2. Laptop mit Internet verbinden (Handy-Hotspot mit Datenvolumen oder
+   Messe-WLAN) und den Bug-Hunt-Server wie gewohnt starten: `npm start`.
+3. In einem zweiten Terminal-Fenster den Tunnel starten:
+   ```bash
+   cloudflared tunnel --url http://localhost:3000
+   ```
+4. `cloudflared` gibt eine Adresse aus wie
+   `https://random-woerter-1234.trycloudflare.com`. Server neu starten, aber
+   diesmal mit dieser Adresse als `PUBLIC_URL`:
+   - **Windows (PowerShell):**
+     `$env:PUBLIC_URL="https://random-woerter-1234.trycloudflare.com"; npm start`
+   - **macOS/Linux:**
+     `PUBLIC_URL=https://random-woerter-1234.trycloudflare.com npm start`
+5. Fertig – Join-Link und QR-Code auf der Startseite nutzen jetzt diese
+   öffentliche Adresse. Besucher können über ihre eigenen mobilen Daten
+   beitreten, ganz ohne euren Hotspot.
+
+**Hinweis:** Diese kostenlose `trycloudflare.com`-Adresse ist zufällig
+generiert und ändert sich bei jedem Neustart von `cloudflared` – für einen
+einzelnen Messetag kein Problem (Adresse einmal am Morgen erzeugen, den Tag
+über stehen lassen). Wer eine dauerhaft gleichbleibende eigene Adresse will,
+kann sich kostenlos bei [Cloudflare](https://dash.cloudflare.com/sign-up)
+registrieren und einen "named tunnel" auf eine eigene (Sub-)Domain legen –
+dafür braucht es aber eine bei Cloudflare verwaltete Domain.
+
+### Alternative: Deployment am Beispiel Render
 
 1. Dieses Repository mit einem GitHub-Account verbinden (ist es schon).
 2. Auf [render.com](https://render.com) **New → Web Service** wählen und das
