@@ -18,7 +18,14 @@
   <div class="brand-logo"><img src="/img/akb-logo.png" alt="Aargauische Kantonalbank"></div>
   <h1><span class="accent">Bug</span> Hunt - Admin</h1>
 
-  <div class="panel">
+  <div class="panel" id="panel-login">
+    <label for="input-admin-password">Admin-Passwort</label>
+    <input type="text" id="input-admin-password" placeholder="Passwort (falls konfiguriert)" autocomplete="off">
+    <button id="btn-admin-login" class="primary">Anmelden</button>
+    <p id="login-error" class="error-text"></p>
+  </div>
+
+  <div class="panel" id="panel-bestenliste" hidden>
     <h2 style="margin:0;">Bestenliste</h2>
     <p id="reset-status" class="status-banner"></p>
     <div id="confirm-box" class="confirm-box" hidden>
@@ -29,7 +36,7 @@
     <button id="btn-reset" class="secondary">Bestenliste zurücksetzen</button>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="panel-lobbys" hidden>
     <h2 style="margin:0;">Offene Lobbys</h2>
     <div id="rooms-list"></div>
     <p class="empty" id="rooms-empty" hidden>Keine offenen Lobbys.</p>
