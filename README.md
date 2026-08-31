@@ -102,22 +102,22 @@ Schwierigkeitsstufen:
 
 ## Farben & Logo ändern
 
-Die Farben sind bereits auf die AKB-Hausfarben eingestellt und an genau einer
-Stelle definiert: ganz oben in **`public/css/style.css`**:
+Das Design ist hell und schlicht gehalten (weisser Hintergrund, AKB-Blau als
+Akzentfarbe) und an genau einer Stelle definiert: ganz oben in
+**`public/css/style.css`**:
 
 ```css
 :root {
-  --accent: #009ee0;        /* AKB Primärfarbe */
-  --accent-contrast: #ffffff; /* Textfarbe auf der Akzentfarbe */
-  --bg: #001a41;             /* AKB Sekundärfarbe, App-Hintergrund */
+  --accent: #009ee0;   /* AKB Primärfarbe – Buttons, Hervorhebungen */
+  --ink: #001a41;      /* AKB Sekundärfarbe – Titel, Code-Zeilen-Hintergrund */
+  --bg: #f2f4f7;        /* Seitenhintergrund, hell und neutral */
 }
 ```
 
 Datei speichern, Browser-Seite neu laden – fertig. Das AKB-Logo liegt unter
 `public/img/akb-logo.png` (transparenter Hintergrund) und wird oben auf jeder
-Seite in einer weissen Karte angezeigt, damit die dunkle Schrift im Logo auch
-auf dem dunklen Hintergrund gut lesbar bleibt. Um es auszutauschen, einfach
-eine neue Datei unter demselben Pfad/Namen ablegen.
+Seite angezeigt. Um es auszutauschen, einfach eine neue Datei unter demselben
+Pfad/Namen ablegen.
 
 ## Was tun, wenn am Stand etwas klemmt?
 

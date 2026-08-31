@@ -1,19 +1,23 @@
 /* Bug Hunt - Styles
-   Dunkles Theme in den AKB-Hausfarben, Systemschriften (keine Web-Fonts,
-   es gibt kein Internet am Stand). Primaer- und Sekundaerfarbe der AKB
-   sind an dieser einen Stelle definiert. */
+   Helles, schlichtes Theme in den AKB-Hausfarben. Systemschriften (keine
+   Web-Fonts, es gibt kein Internet am Stand). Primaer- und Sekundaerfarbe
+   der AKB sind an dieser einen Stelle definiert. */
 :root {
   --accent: #009ee0;        /* AKB Primaerfarbe */
   --accent-contrast: #ffffff;
+  --ink: #001a41;            /* AKB Sekundaerfarbe, als Text-/Titelfarbe */
 
-  --bg: #001a41;             /* AKB Sekundaerfarbe als App-Hintergrund */
-  --bg-panel: #0a2a5c;
-  --bg-line: #123568;
-  --bg-line-hover: #1a4079;
-  --text: #f2f2f2;
-  --text-muted: #9fb3d1;
-  --success: #35d07f;
-  --danger: #ff5a5a;
+  --bg: #f2f4f7;
+  --bg-panel: #ffffff;
+  --border: #dde3ea;
+  --text: #1c2733;
+  --text-muted: #6b7684;
+  --success: #1f9d55;
+  --danger: #d1372e;
+
+  --code-bg: #001a41;
+  --code-bg-hover: #0a2a5c;
+  --code-text: #eef3f9;
 
   --mono: ui-monospace, "SFMono-Regular", "Consolas", "Menlo", "Courier New", monospace;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
@@ -37,7 +41,7 @@ body {
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  padding: 16px;
+  padding: 24px 16px;
 }
 
 [hidden] {
@@ -46,28 +50,22 @@ body {
 
 .app {
   width: 100%;
-  max-width: 640px;
+  max-width: 560px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
 }
 
-.brand-logo {
-  display: flex;
-  justify-content: center;
-}
-
 .brand-logo img {
-  height: 44px;
+  height: 40px;
   width: auto;
-  padding: 10px 16px;
-  background: #ffffff;
-  border-radius: 12px;
 }
 
 h1 {
-  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-size: clamp(1.4rem, 4.5vw, 1.9rem);
+  font-weight: 700;
+  color: var(--ink);
   margin: 0;
   text-align: center;
 }
@@ -80,11 +78,13 @@ h1 .accent {
   color: var(--text-muted);
   text-align: center;
   margin: -12px 0 0;
+  font-size: 0.95rem;
 }
 
 .panel {
   background: var(--bg-panel);
-  border-radius: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   padding: 24px;
   width: 100%;
   display: flex;
@@ -93,17 +93,17 @@ h1 .accent {
 }
 
 label {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
 }
 
 input[type="text"] {
   width: 100%;
-  padding: 14px 16px;
-  font-size: 1.1rem;
-  border-radius: 10px;
-  border: 2px solid var(--bg-line);
-  background: var(--bg);
+  padding: 12px 14px;
+  font-size: 1.05rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
   color: var(--text);
   font-family: var(--sans);
 }
@@ -111,6 +111,7 @@ input[type="text"] {
 input[type="text"]:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 158, 224, 0.15);
 }
 
 input.code-input {
@@ -118,22 +119,17 @@ input.code-input {
   letter-spacing: 0.3em;
   text-transform: uppercase;
   text-align: center;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
 }
 
 button {
-  padding: 14px 20px;
-  font-size: 1.05rem;
+  padding: 13px 20px;
+  font-size: 1rem;
   font-weight: 600;
-  border-radius: 10px;
-  border: none;
+  border-radius: 6px;
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: transform 0.08s ease, opacity 0.15s ease;
   font-family: var(--sans);
-}
-
-button:active {
-  transform: scale(0.97);
 }
 
 button.primary {
@@ -141,16 +137,27 @@ button.primary {
   color: var(--accent-contrast);
 }
 
+button.primary:hover {
+  background: #0089c4;
+}
+
 button.secondary {
-  background: var(--bg-line);
-  color: var(--text);
+  background: var(--bg-panel);
+  color: var(--ink);
+  border-color: var(--border);
+}
+
+button.secondary:hover {
+  background: #f7f9fb;
 }
 
 button.link {
   background: transparent;
-  color: var(--text-muted);
+  border: none;
+  color: var(--accent);
   text-decoration: underline;
   padding: 6px;
+  font-weight: 500;
 }
 
 button:disabled {
@@ -171,13 +178,14 @@ button:disabled {
   content: "";
   flex: 1;
   height: 1px;
-  background: var(--bg-line);
+  background: var(--border);
 }
 
 .error-text {
   color: var(--danger);
   min-height: 1.2em;
   text-align: center;
+  font-size: 0.9rem;
 }
 
 /* --- Warteraum / Code + QR --- */
@@ -188,41 +196,43 @@ button:disabled {
 
 .code-display .code {
   font-family: var(--mono);
-  font-size: clamp(3rem, 14vw, 4.5rem);
+  font-size: clamp(2.6rem, 12vw, 3.6rem);
   letter-spacing: 0.2em;
-  color: var(--accent);
+  color: var(--ink);
   font-weight: 700;
 }
 
 .qr-wrap {
   display: flex;
   justify-content: center;
-  margin: 8px 0;
+  margin: 4px 0;
 }
 
 .qr-wrap img {
   background: #fff;
-  padding: 10px;
-  border-radius: 12px;
-  width: 200px;
-  height: 200px;
+  border: 1px solid var(--border);
+  padding: 8px;
+  border-radius: 6px;
+  width: 180px;
+  height: 180px;
 }
 
 .pulse {
-  animation: pulse 1.6s ease-in-out infinite;
+  animation: pulse 1.8s ease-in-out infinite;
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50% { opacity: 0.55; }
 }
 
 /* --- Countdown --- */
 
 .countdown-number {
-  font-size: 8rem;
-  font-weight: 800;
-  color: var(--accent);
+  font-size: 6rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
 }
 
 /* --- Spielbildschirm --- */
@@ -238,17 +248,18 @@ button:disabled {
 .score-box {
   flex: 1;
   background: var(--bg-panel);
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   padding: 12px;
   text-align: center;
 }
 
 .score-box.me {
-  border: 2px solid var(--accent);
+  border-color: var(--accent);
 }
 
 .score-box .name {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -256,8 +267,9 @@ button:disabled {
 }
 
 .score-box .score {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
+  color: var(--ink);
 }
 
 .round-label {
@@ -277,34 +289,35 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: var(--bg-line);
+  background: var(--code-bg);
   border: 2px solid transparent;
-  border-radius: 10px;
+  border-radius: 6px;
   padding: 12px 14px;
   cursor: pointer;
   font-family: var(--mono);
   font-size: clamp(0.75rem, 3.6vw, 1rem);
+  color: var(--code-text);
   white-space: pre;
   overflow-x: hidden;
   user-select: none;
 }
 
-.code-line:active {
-  background: var(--bg-line-hover);
+.code-line:hover {
+  background: var(--code-bg-hover);
 }
 
 .code-line .key {
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-muted);
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #b8c6db;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--sans);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 
 .code-line .code-text {
@@ -319,12 +332,10 @@ button:disabled {
 
 .code-line.correct {
   border-color: var(--success);
-  background: rgba(53, 208, 127, 0.15);
 }
 
 .code-line.wrong {
   border-color: var(--danger);
-  background: rgba(255, 90, 90, 0.15);
 }
 
 .code-line.locked {
@@ -335,7 +346,7 @@ button:disabled {
 .lock-banner {
   text-align: center;
   color: var(--danger);
-  font-weight: 700;
+  font-weight: 600;
   min-height: 1.4em;
 }
 
@@ -348,9 +359,10 @@ button:disabled {
 /* --- Ende / Ergebnis --- */
 
 .result-title {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 700;
   text-align: center;
+  color: var(--ink);
 }
 
 .result-title.win {
@@ -366,6 +378,7 @@ footer.hint {
   font-size: 0.8rem;
   text-align: center;
   margin-top: auto;
+  padding-top: 12px;
 }
 
 @media (min-width: 600px) {

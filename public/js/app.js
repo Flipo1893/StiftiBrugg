@@ -254,7 +254,7 @@
   socket.on('gameOver', (data) => {
     const iWon = data.winnerName === myName;
     const title = document.getElementById('gameover-title');
-    title.textContent = iWon ? 'Gewonnen! 🎉' : 'Verloren';
+    title.textContent = iWon ? 'Gewonnen!' : 'Verloren';
     title.className = `result-title ${iWon ? 'win' : 'lose'}`;
     const me = data.players.find((p) => p.name === myName) || {};
     const opp = data.players.find((p) => p.name !== myName) || {};
