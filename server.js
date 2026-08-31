@@ -1,8 +1,15 @@
 // server.js
 //
 // Bug Hunt - Server. Node.js + Express + Socket.io, sonst nichts im Backend.
-// Startet mit `npm install && npm start`. Gibt beim Start die LAN-IP aus,
-// damit sie am Stand auf ein Schild geschrieben werden kann.
+// Startet mit `npm install && npm start`.
+//
+// Zwei Betriebsarten, ohne Codeaenderung per Umgebungsvariable waehlbar:
+//   - Lokal am Stand (Standard): Server gibt seine LAN-IP aus, Geraete
+//     verbinden sich ueber den eigenen Hotspot, kein Internet noetig.
+//   - Online gehostet: PUBLIC_URL auf die oeffentliche URL setzen (z.B.
+//     https://bug-hunt.onrender.com), dann nutzen Join-Link und QR-Code
+//     diese Adresse, damit Besucher ueber ihre eigenen mobilen Daten
+//     beitreten koennen. Siehe README fuer eine Deployment-Anleitung.
 
 const os = require('os');
 const path = require('path');
@@ -15,6 +22,11 @@ const rooms = require('./rooms');
 const leaderboard = require('./leaderboard');
 
 const PORT = process.env.PORT || 3000;
+const PUBLIC_URL = (process.env.PUBLIC_URL || '').replace(/\/+$/, '');
+// Wenn gesetzt, muss admin:getState / admin:resetLeaderboard dieses Passwort
+// mitschicken. Ohne gesetztes Passwort (lokaler Betrieb am Stand) bleibt der
+// Admin-Bereich wie bisher ungeschuetzt nutzbar.
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 
 const app = express();
 const server = http.createServer(app);
@@ -43,6 +55,12 @@ function getLanUrl() {
   return `http://localhost:${PORT}`;
 }
 
+// Basis-URL fuer Join-Links/QR-Codes: PUBLIC_URL (Online-Betrieb) hat
+// Vorrang, sonst die automatisch erkannte LAN-IP (Betrieb am Stand).
+function getBaseUrl() {
+  return PUBLIC_URL || getLanUrl();
+}
+
 // --- Socket.io: gesamte Spiellogik -----------------------------------------
 
 io.on('connection', (socket) => {
@@ -68,7 +86,7 @@ io.on('connection', (socket) => {
       const { room, player } = rooms.createRoom(name);
       attachToRoom(room, player);
 
-      const joinUrl = `${getLanUrl()}/?code=${room.code}`;
+      const joinUrl = `${getBaseUrl()}/?code=${room.code}`;
       const qrDataUrl = await QRCode.toDataURL(joinUrl, { margin: 1, scale: 6 });
 
       callback({
@@ -194,14 +212,28 @@ io.on('connection', (socket) => {
 
   // --- Admin ---------------------------------------------------------------
 
+  function isAdminAuthorized(data) {
+    if (!ADMIN_PASSWORD) return true; // kein Passwort gesetzt -> lokaler Betrieb ohne Schutz
+    return data && data.password === ADMIN_PASSWORD;
+  }
+
   socket.on('admin:getState', (data, callback) => {
+    if (!isAdminAuthorized(data)) {
+      callback({ ok: false, error: 'Falsches Admin-Passwort.' });
+      return;
+    }
     callback({
+      ok: true,
       openRooms: rooms.listOpenRooms(),
       leaderboardTop: leaderboard.getTop(10),
     });
   });
 
   socket.on('admin:resetLeaderboard', (data, callback) => {
+    if (!isAdminAuthorized(data)) {
+      if (callback) callback({ ok: false, error: 'Falsches Admin-Passwort.' });
+      return;
+    }
     leaderboard.reset();
     io.emit('leaderboardUpdate', leaderboard.getTop(10));
     if (callback) callback({ ok: true });
@@ -223,9 +255,18 @@ process.on('unhandledRejection', (err) => {
 server.listen(PORT, () => {
   console.log('=================================================');
   console.log('  Bug Hunt Server laeuft!');
-  console.log(`  Lokal:    http://localhost:${PORT}`);
-  console.log(`  Im LAN:   ${getLanUrl()}`);
-  console.log(`  Leaderboard: ${getLanUrl()}/leaderboard`);
-  console.log(`  Admin:       ${getLanUrl()}/admin`);
+  if (PUBLIC_URL) {
+    console.log(`  Oeffentlich: ${PUBLIC_URL}`);
+    console.log(`  Leaderboard: ${PUBLIC_URL}/leaderboard`);
+    console.log(`  Admin:       ${PUBLIC_URL}/admin`);
+    if (!ADMIN_PASSWORD) {
+      console.warn('  WARNUNG: PUBLIC_URL gesetzt, aber kein ADMIN_PASSWORD -> /admin ist oeffentlich ungeschuetzt!');
+    }
+  } else {
+    console.log(`  Lokal:    http://localhost:${PORT}`);
+    console.log(`  Im LAN:   ${getLanUrl()}`);
+    console.log(`  Leaderboard: ${getLanUrl()}/leaderboard`);
+    console.log(`  Admin:       ${getLanUrl()}/admin`);
+  }
   console.log('=================================================');
 });

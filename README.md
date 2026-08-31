@@ -5,9 +5,18 @@ Kantonalbank (AKB). Beide Spieler sehen gleichzeitig dieselben 8 Codezeilen –
 sieben sind identisch, eine weicht minimal ab. Wer die abweichende Zeile zuerst
 antippt, gewinnt den Punkt. Best of 5, wer zuerst 3 Punkte hat, gewinnt.
 
-Läuft komplett **offline** auf einem einzelnen Laptop: kein Internet, keine
-CDNs, keine Datenbank – Node.js + Express + Socket.io, Vanilla JS/HTML/CSS auf
-dem Client.
+Zwei Betriebsarten:
+
+- **Lokal am Stand** (Standard): läuft komplett **offline** auf einem
+  einzelnen Laptop – kein Internet, keine CDNs, keine Datenbank. Geräte
+  verbinden sich über den eigenen Hotspot des Laptops.
+- **Online gehostet**: Besucher treten über ihre **eigenen mobilen Daten**
+  bei, kein Hotspot nötig. Dafür muss der Server öffentlich erreichbar
+  gehostet werden – siehe [Online-Betrieb](#online-betrieb-eigene-mobile-daten)
+  weiter unten.
+
+Backend: Node.js + Express + Socket.io. Frontend: Vanilla JS/HTML/CSS, kein
+Build-Step.
 
 ## Installation & Start
 
@@ -55,6 +64,65 @@ Server stoppen: `Strg + C` im Terminal.
 Falls die Firewall beim ersten Start von `node.exe` fragt, ob es im
 öffentlichen/privaten Netzwerk zugelassen werden soll: **Zulassen**, sonst
 können sich andere Geräte nicht verbinden.
+
+## Online-Betrieb (eigene mobile Daten)
+
+Sollen Besucher über ihre **eigenen mobilen Daten** teilnehmen können (statt
+über euren Hotspot), muss der Server öffentlich im Internet erreichbar sein.
+
+**Wichtig: Nicht auf Netlify/Vercel möglich.** Diese Dienste hosten nur
+statische Seiten und kurzlebige Serverless-Functions – kein dauerhaft
+laufender Node-Prozess, keine langlebigen WebSocket-Verbindungen (die
+Socket.io braucht) und kein beschreibbares Dateisystem für die
+Bestenliste. Stattdessen einen Anbieter mit "echtem" Node-Webservice nutzen,
+z.B. [Render](https://render.com), [Railway](https://railway.app) oder
+[Fly.io](https://fly.io).
+
+### Deployment am Beispiel Render
+
+1. Dieses Repository mit einem GitHub-Account verbinden (ist es schon).
+2. Auf [render.com](https://render.com) **New → Web Service** wählen und das
+   Repo auswählen.
+3. Build Command: `npm install`, Start Command: `npm start`.
+4. Unter **Environment** folgende Variablen setzen:
+   - `PUBLIC_URL` = die von Render vergebene URL, z.B.
+     `https://bug-hunt.onrender.com` (ohne Slash am Ende).
+   - `ADMIN_PASSWORD` = ein selbst gewähltes Passwort für `/admin` (siehe
+     unten, wichtig sobald die App öffentlich erreichbar ist).
+5. Deployen. Render vergibt automatisch HTTPS.
+6. **Wichtig für den Live-Betrieb:** Die kostenlose Stufe schläft nach
+   Inaktivität ein und braucht dann 30–60s zum Aufwachen – bei einer Partie,
+   die maximal 60 Sekunden dauern soll, ruiniert das die erste Runde. Für den
+   eigentlichen Messetag daher einen "Always On"/bezahlten Plan verwenden.
+7. Die App zeigt jetzt automatisch `PUBLIC_URL` in Join-Link und QR-Code an,
+   Besucher scannen den QR-Code mit ihrem eigenen Handy über Mobilfunk.
+
+Railway und Fly.io funktionieren nach demselben Prinzip (Node-Webservice,
+`npm start`, `PORT` wird von der Plattform automatisch gesetzt, `PUBLIC_URL`
+und `ADMIN_PASSWORD` selbst als Umgebungsvariable setzen).
+
+### Admin-Passwortschutz
+
+Ist `ADMIN_PASSWORD` gesetzt, verlangt `/admin` dieses Passwort, bevor
+Lobby-Übersicht oder Bestenliste-Reset funktionieren – sonst könnte
+theoretisch jeder mit dem Link eure Bestenliste löschen. Ohne gesetztes
+`ADMIN_PASSWORD` (lokaler Betrieb am Stand) bleibt `/admin` wie bisher ohne
+Passwort nutzbar.
+
+### Zu beachten beim Online-Betrieb
+
+- **Bestenliste-Persistenz:** `data/leaderboard.json` liegt auf der
+  Festplatte des Hosts. Ohne einen persistenten Datenträger (bei den meisten
+  Anbietern ein kostenpflichtiges Zusatzfeature) geht die Bestenliste bei
+  jedem Neustart/Redeploy verloren. Für einen einzelnen Messetag meist kein
+  Problem – sonst vorher beim Hoster ein persistentes Volume einrichten.
+- **Ein einzelner Server-Prozess:** Lobbys leben im Arbeitsspeicher eines
+  Prozesses. Beim Hoster **keine automatische Skalierung auf mehrere
+  Instanzen** aktivieren, sonst können zwei Spieler in unterschiedlichen
+  Instanzen landen und sich nicht finden.
+- Der lokale Offline-Betrieb bleibt unverändert möglich: einfach kein
+  `PUBLIC_URL` setzen (bzw. lokal `npm start` ohne Umgebungsvariablen
+  ausführen) – dann greift wieder die LAN-IP-Erkennung wie oben beschrieben.
 
 ## Test-Modus (zwei Spieler an einem Rechner)
 
