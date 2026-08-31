@@ -25,6 +25,9 @@
 
 * {
   box-sizing: border-box;
+  /* Verhindert den grauen/weissen Tap-Flash von iOS/Android auf Buttons und
+     Codezeilen, damit unsere eigenen Klick-Animationen sauber greifen. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
@@ -122,7 +125,8 @@ input.code-input {
   font-size: 1.5rem;
 }
 
-button {
+button,
+.btn-link {
   padding: 13px 20px;
   font-size: 1rem;
   font-weight: 600;
@@ -132,22 +136,35 @@ button {
   font-family: var(--sans);
 }
 
-button.primary {
+/* .btn-link laesst einen <a>-Link wie einen Button aussehen (z.B. "Zur
+   Bestenliste" nach dem Spiel), damit beide Optionen gleich gut sichtbar
+   und gleich gross antippbar sind. */
+.btn-link {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+button.primary,
+.btn-link.primary {
   background: var(--accent);
   color: var(--accent-contrast);
 }
 
-button.primary:hover {
+button.primary:hover,
+.btn-link.primary:hover {
   background: #0089c4;
 }
 
-button.secondary {
+button.secondary,
+.btn-link.secondary {
   background: var(--bg-panel);
   color: var(--ink);
   border-color: var(--border);
 }
 
-button.secondary:hover {
+button.secondary:hover,
+.btn-link.secondary:hover {
   background: #f7f9fb;
 }
 
@@ -300,9 +317,16 @@ button:disabled {
   white-space: pre;
   overflow-x: hidden;
   user-select: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease,
+    opacity 0.2s ease, transform 0.12s ease;
 }
 
 .code-line:hover {
+  background: var(--code-bg-hover);
+}
+
+.code-line:active {
+  transform: scale(0.98);
   background: var(--code-bg-hover);
 }
 
@@ -332,15 +356,47 @@ button:disabled {
 
 .code-line.correct {
   border-color: var(--success);
+  background: rgba(31, 157, 85, 0.18);
+  animation: code-line-pop 0.35s ease;
 }
 
 .code-line.wrong {
   border-color: var(--danger);
+  background: rgba(209, 55, 46, 0.18);
+  animation: code-line-shake 0.3s ease;
 }
 
 .code-line.locked {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* Die aufgeloeste richtige Zeile bleibt voll sichtbar, auch wenn alle
+   anderen Zeilen gleichzeitig gedimmt werden. */
+.code-line.locked.correct {
+  opacity: 1;
+}
+
+@keyframes code-line-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.025); }
+  100% { transform: scale(1); }
+}
+
+@keyframes code-line-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .code-line {
+    transition: none;
+  }
+  .code-line.correct,
+  .code-line.wrong {
+    animation: none;
+  }
 }
 
 .lock-banner {

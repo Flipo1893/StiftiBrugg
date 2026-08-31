@@ -7,12 +7,19 @@
 <link rel="stylesheet" href="/css/style.css">
 <style>
   .lb-wrap { width: 100%; max-width: 900px; }
-  table { width: 100%; border-collapse: collapse; font-size: clamp(1rem, 2.4vw, 1.4rem); }
-  th, td { padding: 14px 18px; text-align: left; }
+  .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: clamp(0.8rem, 2.4vw, 1.4rem); table-layout: fixed; }
+  th, td { padding: 12px 8px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   thead th { color: var(--text-muted); font-weight: 600; border-bottom: 2px solid var(--border); }
   tbody tr { border-bottom: 1px solid var(--border); }
   tbody tr:nth-child(1) .rank { color: var(--accent); font-weight: 800; }
-  .rank { width: 60px; }
+  .rank { width: 10%; }
+  .col-punkte { width: 27%; }
+  .col-reaktion { width: 32%; }
+
+  @media (min-width: 480px) {
+    th, td { padding: 14px 18px; }
+  }
   .empty { text-align: center; color: var(--text-muted); padding: 40px; }
 </style>
 </head>
@@ -22,12 +29,14 @@
   <h1><span class="accent">Bug</span> Hunt - Bestenliste</h1>
   <p class="subtitle">Top 10 des heutigen Tages</p>
   <div class="panel">
-    <table>
-      <thead>
-        <tr><th class="rank">#</th><th>Name</th><th>Punkte</th><th>Schnellste Reaktion</th></tr>
-      </thead>
-      <tbody id="lb-body"></tbody>
-    </table>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th class="rank">#</th><th>Name</th><th class="col-punkte">Punkte</th><th class="col-reaktion">Reaktion</th></tr>
+        </thead>
+        <tbody id="lb-body"></tbody>
+      </table>
+    </div>
     <p class="empty" id="lb-empty" hidden>Noch keine Partien gespielt.</p>
   </div>
 </div>
