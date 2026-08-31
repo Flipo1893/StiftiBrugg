@@ -100,7 +100,8 @@ label {
   color: var(--text-muted);
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="password"] {
   width: 100%;
   padding: 12px 14px;
   font-size: 1.05rem;
@@ -111,7 +112,8 @@ input[type="text"] {
   font-family: var(--sans);
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="password"]:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(0, 158, 224, 0.15);
@@ -318,7 +320,7 @@ button:disabled {
   overflow-x: hidden;
   user-select: none;
   transition: border-color 0.2s ease, background-color 0.2s ease,
-    opacity 0.2s ease, transform 0.12s ease;
+    opacity 0.2s ease, transform 0.12s ease, box-shadow 0.2s ease;
 }
 
 .code-line:hover {
@@ -357,13 +359,13 @@ button:disabled {
 .code-line.correct {
   border-color: var(--success);
   background: rgba(31, 157, 85, 0.18);
-  animation: code-line-pop 0.35s ease;
+  animation: code-line-correct 0.5s ease;
 }
 
 .code-line.wrong {
   border-color: var(--danger);
   background: rgba(209, 55, 46, 0.18);
-  animation: code-line-shake 0.3s ease;
+  animation: code-line-wrong 0.4s ease;
 }
 
 .code-line.locked {
@@ -377,16 +379,57 @@ button:disabled {
   opacity: 1;
 }
 
-@keyframes code-line-pop {
-  0% { transform: scale(1); }
-  45% { transform: scale(1.025); }
-  100% { transform: scale(1); }
+/* Kleines Haekchen/Kreuz als zusaetzlicher Flex-Eintrag (kein Overlay, daher
+   nie ueberlappend mit dem Codetext) - macht das Feedback auf einen Blick
+   erkennbar, nicht nur ueber die Randfarbe. */
+.code-line.correct::after,
+.code-line.wrong::after {
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 1rem;
+  animation: code-line-icon-in 0.3s ease;
 }
 
-@keyframes code-line-shake {
+.code-line.correct::after {
+  content: "✓";
+  color: var(--success);
+}
+
+.code-line.wrong::after {
+  content: "✗";
+  color: var(--danger);
+}
+
+@keyframes code-line-correct {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(31, 157, 85, 0.45);
+  }
+  35% {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 6px rgba(31, 157, 85, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(31, 157, 85, 0);
+  }
+}
+
+@keyframes code-line-wrong {
   0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+
+@keyframes code-line-icon-in {
+  0% { opacity: 0; transform: scale(0.4); }
+  60% { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -394,7 +437,9 @@ button:disabled {
     transition: none;
   }
   .code-line.correct,
-  .code-line.wrong {
+  .code-line.wrong,
+  .code-line.correct::after,
+  .code-line.wrong::after {
     animation: none;
   }
 }

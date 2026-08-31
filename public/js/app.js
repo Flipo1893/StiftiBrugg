@@ -38,9 +38,15 @@
   };
 
   let myName = '';
-  let opponentName = '';
+  // Index (0 oder 1) dieses Spielers innerhalb room.players, vom Server
+  // vergeben. Wichtig: Identitaet NIE ueber den Namen abgleichen - bei
+  // gleichen Vornamen (am Stand realistisch) waere sonst nicht eindeutig,
+  // wer "ich" und wer "der Gegner" ist.
+  let myIndex = null;
   let currentLines = [];
   let roundLocked = false; // clientseitige Anzeige, Server bleibt Wahrheit
+  let countdownInterval = null;
+  let lockInterval = null;
 
   // --- Startbildschirm -------------------------------------------------
 
@@ -74,6 +80,7 @@
         return;
       }
       myName = name;
+      myIndex = res.youIndex;
       session.code = res.code;
       session.token = res.token;
       session.name = name;
@@ -99,6 +106,7 @@
         return;
       }
       myName = name;
+      myIndex = res.youIndex;
       session.code = res.code;
       session.token = res.token;
       session.name = name;
@@ -116,6 +124,7 @@
         return;
       }
       myName = name;
+      myIndex = res.youIndex;
       session.code = res.code;
       session.token = res.token;
       session.name = name;
@@ -136,13 +145,15 @@
 
   socket.on('countdown', (data) => {
     showScreen('countdown');
+    if (countdownInterval) clearInterval(countdownInterval);
     let remaining = Math.ceil(data.ms / 1000);
     const numberEl = document.getElementById('countdown-number');
     numberEl.textContent = remaining;
-    const interval = setInterval(() => {
+    countdownInterval = setInterval(() => {
       remaining -= 1;
       if (remaining <= 0) {
-        clearInterval(interval);
+        clearInterval(countdownInterval);
+        countdownInterval = null;
       } else {
         numberEl.textContent = remaining;
       }
@@ -151,18 +162,9 @@
 
   // --- Spielrunde ----------------------------------------------------------
 
-  function myPublicIndex(players) {
-    // Der Server schickt Spieler in Beitrittsreihenfolge; wir identifizieren
-    // "mich" ueber den gespeicherten Namen (fuer die Anzeige reicht das,
-    // die eigentliche Zuordnung passiert serverseitig ueber den Token).
-    return players.findIndex((p) => p.name === myName);
-  }
-
   function updateScoreboard(players) {
-    const idx = myPublicIndex(players);
-    const me = idx >= 0 ? players[idx] : { name: myName, score: 0 };
-    const opp = players[idx === 0 ? 1 : 0] || { name: opponentName || 'Gegner', score: 0 };
-    opponentName = opp.name;
+    const me = players[myIndex] || { name: myName, score: 0 };
+    const opp = players[myIndex === 0 ? 1 : 0] || { name: 'Gegner', score: 0 };
     document.getElementById('game-my-name').textContent = me.name;
     document.getElementById('game-my-score').textContent = me.score;
     document.getElementById('game-opp-name').textContent = opp.name;
@@ -199,6 +201,10 @@
   socket.on('roundStart', (data) => {
     currentLines = data.lines;
     roundLocked = false;
+    if (lockInterval) {
+      clearInterval(lockInterval);
+      lockInterval = null;
+    }
     document.getElementById('game-round-label').textContent = `Runde ${data.round}`;
     document.getElementById('game-lock-banner').textContent = '';
     document.getElementById('game-status-banner').textContent = '';
@@ -211,13 +217,15 @@
     const row = document.querySelector(`.code-line[data-index="${data.lineIndex}"]`);
     if (row) row.classList.add('wrong');
     roundLocked = true;
+    if (lockInterval) clearInterval(lockInterval);
     const lockBanner = document.getElementById('game-lock-banner');
     let remaining = data.lockMs;
     updateLockBanner(lockBanner, remaining);
-    const interval = setInterval(() => {
+    lockInterval = setInterval(() => {
       remaining -= 100;
       if (remaining <= 0) {
-        clearInterval(interval);
+        clearInterval(lockInterval);
+        lockInterval = null;
         lockBanner.textContent = '';
         roundLocked = false;
         if (row) row.classList.remove('wrong');
@@ -245,19 +253,19 @@
       row.classList.add('locked');
     });
     const statusBanner = document.getElementById('game-status-banner');
-    statusBanner.textContent = data.winnerName === myName
+    statusBanner.textContent = data.winnerIndex === myIndex
       ? `Punkt für dich! (${data.reactionMs} ms)`
       : `Punkt für ${data.winnerName}`;
     updateScoreboard(data.players);
   });
 
   socket.on('gameOver', (data) => {
-    const iWon = data.winnerName === myName;
+    const iWon = data.winnerIndex === myIndex;
     const title = document.getElementById('gameover-title');
     title.textContent = iWon ? 'Gewonnen!' : 'Verloren';
     title.className = `result-title ${iWon ? 'win' : 'lose'}`;
-    const me = data.players.find((p) => p.name === myName) || {};
-    const opp = data.players.find((p) => p.name !== myName) || {};
+    const me = data.players[myIndex] || {};
+    const opp = data.players[myIndex === 0 ? 1 : 0] || {};
     document.getElementById('gameover-score').textContent = `${me.score ?? 0} : ${opp.score ?? 0}`;
     showScreen('gameover');
     session.clear();
@@ -307,6 +315,7 @@
         showScreen('start');
         return;
       }
+      myIndex = res.youIndex;
       if (res.state === 'waiting') {
         showScreen('waiting');
         document.getElementById('waiting-code').textContent = res.code;

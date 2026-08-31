@@ -44,7 +44,9 @@ Die Konsole zeigt danach etwas wie:
 - `/leaderboard` auf einem zweiten Bildschirm/Beamer offen lassen – die Top 10
   aktualisieren sich live.
 - `/admin` zeigt offene Lobbys und hat einen Knopf, um die Bestenliste
-  zurückzusetzen (z.B. für den nächsten Messetag).
+  zurückzusetzen (z.B. für den nächsten Messetag). Passwort: `stiftibrugg`
+  (änderbar/deaktivierbar über `ADMIN_PASSWORD`, siehe
+  [Admin-Passwortschutz](#admin-passwortschutz)).
 
 Server stoppen: `Strg + C` im Terminal.
 
@@ -144,8 +146,9 @@ dafür braucht es aber eine bei Cloudflare verwaltete Domain.
 4. Unter **Environment** folgende Variablen setzen:
    - `PUBLIC_URL` = die von Render vergebene URL, z.B.
      `https://bug-hunt.onrender.com` (ohne Slash am Ende).
-   - `ADMIN_PASSWORD` = ein selbst gewähltes Passwort für `/admin` (siehe
-     unten, wichtig sobald die App öffentlich erreichbar ist).
+   - `ADMIN_PASSWORD` = ein eigenes, sicheres Passwort für `/admin` (ohne
+     diese Variable gilt das Standard-Passwort `stiftibrugg` – sobald die App
+     öffentlich erreichbar ist, unbedingt ein eigenes setzen, siehe unten).
 5. Deployen. Render vergibt automatisch HTTPS.
 6. **Wichtig für den Live-Betrieb:** Die kostenlose Stufe schläft nach
    Inaktivität ein und braucht dann 30–60s zum Aufwachen – bei einer Partie,
@@ -160,11 +163,13 @@ und `ADMIN_PASSWORD` selbst als Umgebungsvariable setzen).
 
 ### Admin-Passwortschutz
 
-Ist `ADMIN_PASSWORD` gesetzt, verlangt `/admin` dieses Passwort, bevor
-Lobby-Übersicht oder Bestenliste-Reset funktionieren – sonst könnte
-theoretisch jeder mit dem Link eure Bestenliste löschen. Ohne gesetztes
-`ADMIN_PASSWORD` (lokaler Betrieb am Stand) bleibt `/admin` wie bisher ohne
-Passwort nutzbar.
+`/admin` verlangt immer ein Passwort, bevor Lobby-Übersicht oder
+Bestenliste-Reset funktionieren – **Standard-Passwort ist `stiftibrugg`**.
+Für den Online-Betrieb solltet ihr per `ADMIN_PASSWORD`-Umgebungsvariable ein
+eigenes, stärkeres Passwort setzen (siehe oben), da `/admin` sonst mit dem
+bekannten Standardpasswort von aussen erreichbar wäre. Wer den Schutz
+bewusst ganz ausschalten will (z.B. rein lokal am Stand), setzt
+`ADMIN_PASSWORD=""` explizit leer.
 
 ### Zu beachten beim Online-Betrieb
 

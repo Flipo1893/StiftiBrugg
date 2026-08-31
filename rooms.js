@@ -167,6 +167,7 @@ class Room {
     this.touch();
     this.state = 'roundResult';
     io.to(this.code).emit('roundResult', {
+      winnerIndex: this.players.indexOf(winner),
       winnerName: winner.name,
       correctIndex: this.currentPuzzle.correctIndex,
       reactionMs,
@@ -191,6 +192,7 @@ class Room {
     }
     io.emit('leaderboardUpdate', leaderboard.getTop(10));
     io.to(this.code).emit('gameOver', {
+      winnerIndex: this.players.indexOf(gameWinner),
       winnerName: gameWinner.name,
       players: this.publicPlayers(),
     });

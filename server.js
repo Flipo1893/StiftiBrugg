@@ -23,10 +23,10 @@ const leaderboard = require('./leaderboard');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_URL = (process.env.PUBLIC_URL || '').replace(/\/+$/, '');
-// Wenn gesetzt, muss admin:getState / admin:resetLeaderboard dieses Passwort
-// mitschicken. Ohne gesetztes Passwort (lokaler Betrieb am Stand) bleibt der
-// Admin-Bereich wie bisher ungeschuetzt nutzbar.
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+// admin:getState / admin:resetLeaderboard verlangen dieses Passwort. Default
+// "stiftibrugg", ueberschreibbar per Umgebungsvariable (z.B. fuer den
+// Online-Betrieb ein staerkeres Passwort setzen).
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'stiftibrugg';
 
 const app = express();
 const server = http.createServer(app);
@@ -109,6 +109,7 @@ io.on('connection', (socket) => {
         ok: true,
         code: room.code,
         token: player.token,
+        youIndex: room.players.indexOf(player),
         joinUrl,
         qrDataUrl,
       });
@@ -129,7 +130,12 @@ io.on('connection', (socket) => {
       }
       const { room, player } = result;
       attachToRoom(room, player);
-      callback({ ok: true, code: room.code, token: player.token });
+      callback({
+        ok: true,
+        code: room.code,
+        token: player.token,
+        youIndex: room.players.indexOf(player),
+      });
 
       io.to(room.code).emit('lobbyUpdate', { players: room.publicPlayers() });
 
@@ -167,6 +173,7 @@ io.on('connection', (socket) => {
         state: room.state,
         round: room.round,
         players: room.publicPlayers(),
+        youIndex: room.players.indexOf(player),
         currentLines: room.currentPuzzle ? room.currentPuzzle.lines : null,
       });
     } catch (err) {
@@ -205,6 +212,18 @@ io.on('connection', (socket) => {
     player.socketId = null;
     room.touch();
 
+    // Die Partie ist bereits regulaer zu Ende (z.B. weil jemand auf "Zur
+    // Bestenliste" geklickt hat und die Seite verlaesst): kein Abbruch-
+    // Hinweis fuer den anderen Spieler noetig, der sonst dessen Gameover-
+    // Bildschirm ueberschreiben und ihn an seinem eigenen "Zur Bestenliste"/
+    // "Nochmal spielen" hindern wuerde.
+    if (room.state === 'finished') {
+      if (room.players.every((p) => !p.connected)) {
+        rooms.removeRoom(room.code);
+      }
+      return;
+    }
+
     const opponent = room.getOpponent(token);
     if (opponent && opponent.connected) {
       io.to(opponent.socketId).emit('opponentDisconnected', {
@@ -229,7 +248,7 @@ io.on('connection', (socket) => {
   // --- Admin ---------------------------------------------------------------
 
   function isAdminAuthorized(data) {
-    if (!ADMIN_PASSWORD) return true; // kein Passwort gesetzt -> lokaler Betrieb ohne Schutz
+    if (!ADMIN_PASSWORD) return true; // ADMIN_PASSWORD explizit leer gesetzt -> Schutz bewusst deaktiviert
     return data && data.password === ADMIN_PASSWORD;
   }
 
@@ -276,7 +295,7 @@ server.listen(PORT, () => {
     console.log(`  Leaderboard: ${PUBLIC_URL}/leaderboard`);
     console.log(`  Admin:       ${PUBLIC_URL}/admin`);
     if (!ADMIN_PASSWORD) {
-      console.warn('  WARNUNG: PUBLIC_URL gesetzt, aber kein ADMIN_PASSWORD -> /admin ist oeffentlich ungeschuetzt!');
+      console.warn('  WARNUNG: ADMIN_PASSWORD ist leer -> /admin ist oeffentlich ungeschuetzt!');
     }
   } else {
     console.log(`  Lokal:    http://localhost:${PORT}`);
@@ -284,5 +303,6 @@ server.listen(PORT, () => {
     console.log(`  Leaderboard: ${getLanUrl()}/leaderboard`);
     console.log(`  Admin:       ${getLanUrl()}/admin`);
   }
+  console.log(`  Admin-Passwort: ${ADMIN_PASSWORD ? '(gesetzt, siehe ADMIN_PASSWORD)' : '(kein Schutz)'}`);
   console.log('=================================================');
 });
