@@ -1,17 +1,17 @@
 /* Bug Hunt - Styles
-   Dunkles Theme, Systemschriften (keine Web-Fonts, es gibt kein Internet
-   am Stand). Die Akzentfarbe ist an genau dieser einen Stelle definiert -
-   hier auf die AKB-Hausfarbe anpassen. */
+   Dunkles Theme in den AKB-Hausfarben, Systemschriften (keine Web-Fonts,
+   es gibt kein Internet am Stand). Primaer- und Sekundaerfarbe der AKB
+   sind an dieser einen Stelle definiert. */
 :root {
-  --accent: #ffcc00;
-  --accent-contrast: #1a1a1a;
+  --accent: #009ee0;        /* AKB Primaerfarbe */
+  --accent-contrast: #ffffff;
 
-  --bg: #121212;
-  --bg-panel: #1e1e1e;
-  --bg-line: #262626;
-  --bg-line-hover: #303030;
+  --bg: #001a41;             /* AKB Sekundaerfarbe als App-Hintergrund */
+  --bg-panel: #0a2a5c;
+  --bg-line: #123568;
+  --bg-line-hover: #1a4079;
   --text: #f2f2f2;
-  --text-muted: #9a9a9a;
+  --text-muted: #9fb3d1;
   --success: #35d07f;
   --danger: #ff5a5a;
 
@@ -51,6 +51,19 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 20px;
+}
+
+.brand-logo {
+  display: flex;
+  justify-content: center;
+}
+
+.brand-logo img {
+  height: 44px;
+  width: auto;
+  padding: 10px 16px;
+  background: #ffffff;
+  border-radius: 12px;
 }
 
 h1 {

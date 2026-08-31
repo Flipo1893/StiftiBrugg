@@ -100,19 +100,24 @@ Schwierigkeitsstufen:
 - **Ab Runde 5 (schwer):** subtile Unterschiede wie `1` statt `l` oder
   vertauschte Buchstaben.
 
-## Farbe ändern
+## Farben & Logo ändern
 
-Die Akzentfarbe ist an genau einer Stelle definiert: ganz oben in
-**`public/css/style.css`** in der CSS-Variable `--accent`:
+Die Farben sind bereits auf die AKB-Hausfarben eingestellt und an genau einer
+Stelle definiert: ganz oben in **`public/css/style.css`**:
 
 ```css
 :root {
-  --accent: #ffcc00; /* <- hier auf die AKB-Hausfarbe anpassen */
-  --accent-contrast: #1a1a1a; /* Textfarbe auf der Akzentfarbe, bei Bedarf anpassen */
+  --accent: #009ee0;        /* AKB Primärfarbe */
+  --accent-contrast: #ffffff; /* Textfarbe auf der Akzentfarbe */
+  --bg: #001a41;             /* AKB Sekundärfarbe, App-Hintergrund */
 }
 ```
 
-Datei speichern, Browser-Seite neu laden – fertig.
+Datei speichern, Browser-Seite neu laden – fertig. Das AKB-Logo liegt unter
+`public/img/akb-logo.png` (transparenter Hintergrund) und wird oben auf jeder
+Seite in einer weissen Karte angezeigt, damit die dunkle Schrift im Logo auch
+auf dem dunklen Hintergrund gut lesbar bleibt. Um es auszutauschen, einfach
+eine neue Datei unter demselben Pfad/Namen ablegen.
 
 ## Was tun, wenn am Stand etwas klemmt?
 
