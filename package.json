@@ -1,0 +1,15 @@
+{
+  "name": "bug-hunt",
+  "version": "1.0.0",
+  "description": "Bug Hunt - Zwei-Spieler Duell-Webgame fuer den Stifti-Berufsmesse-Stand der AKB",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5",
+    "qrcode": "^1.5.3",
+    "uuid": "^9.0.1"
+  }
+}

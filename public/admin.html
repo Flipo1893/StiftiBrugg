@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bug Hunt - Admin</title>
+<link rel="stylesheet" href="/css/style.css">
+<style>
+  .admin-wrap { width: 100%; max-width: 700px; }
+  .room-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--bg-line); }
+  .room-row:last-child { border-bottom: none; }
+  .empty { text-align: center; color: var(--text-muted); padding: 20px; }
+  .confirm-box { display: flex; gap: 10px; align-items: center; }
+</style>
+</head>
+<body>
+<div class="app admin-wrap">
+  <h1><span class="accent">Bug</span> Hunt - Admin</h1>
+
+  <div class="panel">
+    <h2 style="margin:0;">Bestenliste</h2>
+    <p id="reset-status" class="status-banner"></p>
+    <div id="confirm-box" class="confirm-box" hidden>
+      <span>Wirklich zurücksetzen?</span>
+      <button id="btn-confirm-reset" class="primary">Ja, löschen</button>
+      <button id="btn-cancel-reset" class="secondary">Abbrechen</button>
+    </div>
+    <button id="btn-reset" class="secondary">Bestenliste zurücksetzen</button>
+  </div>
+
+  <div class="panel">
+    <h2 style="margin:0;">Offene Lobbys</h2>
+    <div id="rooms-list"></div>
+    <p class="empty" id="rooms-empty" hidden>Keine offenen Lobbys.</p>
+  </div>
+
+  <a href="/leaderboard" class="link" style="text-decoration:underline; color:var(--text-muted);">Zur Bestenliste</a>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

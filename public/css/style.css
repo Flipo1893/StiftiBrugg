@@ -1,0 +1,362 @@
+/* Bug Hunt - Styles
+   Dunkles Theme, Systemschriften (keine Web-Fonts, es gibt kein Internet
+   am Stand). Die Akzentfarbe ist an genau dieser einen Stelle definiert -
+   hier auf die AKB-Hausfarbe anpassen. */
+:root {
+  --accent: #ffcc00;
+  --accent-contrast: #1a1a1a;
+
+  --bg: #121212;
+  --bg-panel: #1e1e1e;
+  --bg-line: #262626;
+  --bg-line-hover: #303030;
+  --text: #f2f2f2;
+  --text-muted: #9a9a9a;
+  --success: #35d07f;
+  --danger: #ff5a5a;
+
+  --mono: ui-monospace, "SFMono-Regular", "Consolas", "Menlo", "Courier New", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.app {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+h1 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  margin: 0;
+  text-align: center;
+}
+
+h1 .accent {
+  color: var(--accent);
+}
+
+.subtitle {
+  color: var(--text-muted);
+  text-align: center;
+  margin: -12px 0 0;
+}
+
+.panel {
+  background: var(--bg-panel);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  border: 2px solid var(--bg-line);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+input.code-input {
+  font-family: var(--mono);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 1.6rem;
+}
+
+button {
+  padding: 14px 20px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.08s ease, opacity 0.15s ease;
+  font-family: var(--sans);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+button.primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+button.secondary {
+  background: var(--bg-line);
+  color: var(--text);
+}
+
+button.link {
+  background: transparent;
+  color: var(--text-muted);
+  text-decoration: underline;
+  padding: 6px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--bg-line);
+}
+
+.error-text {
+  color: var(--danger);
+  min-height: 1.2em;
+  text-align: center;
+}
+
+/* --- Warteraum / Code + QR --- */
+
+.code-display {
+  text-align: center;
+}
+
+.code-display .code {
+  font-family: var(--mono);
+  font-size: clamp(3rem, 14vw, 4.5rem);
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.qr-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.qr-wrap img {
+  background: #fff;
+  padding: 10px;
+  border-radius: 12px;
+  width: 200px;
+  height: 200px;
+}
+
+.pulse {
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* --- Countdown --- */
+
+.countdown-number {
+  font-size: 8rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+/* --- Spielbildschirm --- */
+
+.scoreboard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+}
+
+.score-box {
+  flex: 1;
+  background: var(--bg-panel);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+
+.score-box.me {
+  border: 2px solid var(--accent);
+}
+
+.score-box .name {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-box .score {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.round-label {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.lines {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.code-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-line);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: clamp(0.75rem, 3.6vw, 1rem);
+  white-space: pre;
+  overflow-x: hidden;
+  user-select: none;
+}
+
+.code-line:active {
+  background: var(--bg-line-hover);
+}
+
+.code-line .key {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+}
+
+.code-line .code-text {
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.code-line .code-text::-webkit-scrollbar {
+  display: none;
+}
+
+.code-line.correct {
+  border-color: var(--success);
+  background: rgba(53, 208, 127, 0.15);
+}
+
+.code-line.wrong {
+  border-color: var(--danger);
+  background: rgba(255, 90, 90, 0.15);
+}
+
+.code-line.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lock-banner {
+  text-align: center;
+  color: var(--danger);
+  font-weight: 700;
+  min-height: 1.4em;
+}
+
+.status-banner {
+  text-align: center;
+  color: var(--text-muted);
+  min-height: 1.4em;
+}
+
+/* --- Ende / Ergebnis --- */
+
+.result-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.result-title.win {
+  color: var(--success);
+}
+
+.result-title.lose {
+  color: var(--danger);
+}
+
+footer.hint {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: auto;
+}
+
+@media (min-width: 600px) {
+  .lines {
+    gap: 10px;
+  }
+}
